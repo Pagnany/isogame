@@ -1,29 +1,23 @@
-use bevy::{
-    prelude::*,
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-};
+use bevy::prelude::*;
 
 const TILE_WIDTH: f32 = 50.0;
 const TILE_HIGHT: f32 = 50.0;
 
-pub fn create_test_map(
-    commands: &mut Commands,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
-) {
-    let mut x = 0.0;
-    let mut y = 0.0;
+pub fn create_test_map(commands: &mut Commands, asset_server: &Res<AssetServer>) {
+    let left = 0.0 - crate::SCREEN_WIDTH / 2.0 + TILE_WIDTH / 2.0;
+    let bottom = 0.0 - crate::SCREEN_HEIGHT / 2.0 + TILE_HIGHT / 2.0;
+    let mut x = left;
+    let mut y = bottom;
     for _ in 0..10 {
         for _ in 0..10 {
-            commands.spawn(MaterialMesh2dBundle {
-                mesh: Mesh2dHandle(meshes.add(Rectangle::new(TILE_WIDTH, TILE_HIGHT))),
-                material: materials.add(Color::linear_rgb(1.0, 1.0, 1.0)),
+            commands.spawn(SpriteBundle {
+                texture: asset_server.load("textures/texture_ground_01.png"),
                 transform: Transform::from_xyz(x, y, 0.0),
                 ..default()
             });
-            x += TILE_WIDTH + 5.0;
+            x += TILE_WIDTH;
         }
-        x = 0.0;
-        y += TILE_HIGHT + 5.0;
+        x = left;
+        y += TILE_HIGHT;
     }
 }

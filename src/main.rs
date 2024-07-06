@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 pub mod mapgenerator;
 
-const SCREEN_WIDTH: f32 = 1280.0;
-const SCREEN_HEIGHT: f32 = 720.0;
+pub const SCREEN_WIDTH: f32 = 1280.0;
+pub const SCREEN_HEIGHT: f32 = 720.0;
 
 fn main() {
     App::new()
@@ -19,20 +19,8 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
 
-    commands.spawn(
-        TextBundle::from_section("This is a game", TextStyle::default()).with_style(Style {
-            position_type: PositionType::Absolute,
-            top: Val::Px(12.0),
-            left: Val::Px(12.0),
-            ..default()
-        }),
-    );
-    crate::mapgenerator::create_test_map(&mut commands, &mut meshes, &mut materials);
+    crate::mapgenerator::create_test_map(&mut commands, &asset_server);
 }
