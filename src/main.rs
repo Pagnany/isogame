@@ -60,10 +60,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     crate::mapgenerator::create_test_map(&mut commands, &asset_server);
 }
 
-fn move_tiles(mut query: Query<&mut Transform, With<crate::mapgenerator::MapTile>>) {
+fn move_tiles(
+    time: Res<Time>,
+    mut query: Query<&mut Transform, With<crate::mapgenerator::MapTile>>,
+) {
     for mut transform in &mut query {
-        transform.translation.x += 5.0;
-        transform.translation.y += 5.0;
+        transform.translation.x += 150. * time.delta_seconds();
+        transform.translation.y += 150. * time.delta_seconds();
     }
 }
 
