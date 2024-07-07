@@ -29,7 +29,7 @@ fn main() {
             }),
             FrameTimeDiagnosticsPlugin::default(),
         ))
-        .add_systems(FixedUpdate, (text_update_system,))
+        .add_systems(FixedUpdate, (text_update_system, move_tiles))
         .insert_resource(Time::<Fixed>::from_seconds(TICK_TIME.into()))
         .add_systems(Startup, setup)
         .run();
@@ -58,6 +58,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 
     crate::mapgenerator::create_test_map(&mut commands, &asset_server);
+}
+
+fn move_tiles(mut query: Query<&mut Transform, With<crate::mapgenerator::MapTile>>) {
+    for mut transform in &mut query {
+        transform.translation.x += 5.0;
+        transform.translation.y += 5.0;
+    }
 }
 
 fn text_update_system(
