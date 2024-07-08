@@ -5,6 +5,7 @@ use bevy::{
 };
 
 pub mod mapgenerator;
+pub mod player;
 
 pub const SCREEN_WIDTH: f32 = 1280.0;
 pub const SCREEN_HEIGHT: f32 = 720.0;
@@ -29,7 +30,7 @@ fn main() {
             }),
             FrameTimeDiagnosticsPlugin::default(),
         ))
-        .add_systems(FixedUpdate, (text_update_system, move_tiles))
+        .add_systems(FixedUpdate, (fps_update_system, move_tiles))
         .insert_resource(Time::<Fixed>::from_seconds(TICK_TIME.into()))
         .add_systems(Startup, setup)
         .run();
@@ -39,7 +40,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
 
     commands.spawn((
-        // Create a TextBundle that has a Text with a list of sections.
         TextBundle::from_sections([
             TextSection::new(
                 "FPS: ",
@@ -61,16 +61,28 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 }
 
 fn move_tiles(
+    keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
     mut query: Query<&mut Transform, With<crate::mapgenerator::MapTile>>,
 ) {
+    let move_speed = 150.;
     for mut transform in &mut query {
-        transform.translation.x += 150. * time.delta_seconds();
-        transform.translation.y += 150. * time.delta_seconds();
+        if keys.pressed(KeyCode::KeyW) {
+            transform.translation.y += move_speed * time.delta_seconds();
+        }
+        if keys.pressed(KeyCode::KeyA) {
+            transform.translation.x -= move_speed * time.delta_seconds();
+        }
+        if keys.pressed(KeyCode::KeyS) {
+            transform.translation.y -= move_speed * time.delta_seconds();
+        }
+        if keys.pressed(KeyCode::KeyD) {
+            transform.translation.x += move_speed * time.delta_seconds();
+        }
     }
 }
 
-fn text_update_system(
+fn fps_update_system(
     diagnostics: Res<DiagnosticsStore>,
     mut query: Query<&mut Text, With<FpsText>>,
 ) {
