@@ -30,7 +30,15 @@ fn main() {
             }),
             FrameTimeDiagnosticsPlugin::default(),
         ))
-        .add_systems(FixedUpdate, (fps_update_system, move_tiles))
+        .add_systems(
+            FixedUpdate,
+            (
+                fps_update_system,
+                player_movement_system,
+                move_tiles,
+                kill_game_on_esc,
+            ),
+        )
         .insert_resource(Time::<Fixed>::from_seconds(TICK_TIME.into()))
         .add_systems(Startup, setup)
         .run();
@@ -58,27 +66,77 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 
     crate::mapgenerator::create_test_map(&mut commands, &asset_server);
+
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/player_left_01.png"),
+            transform: Transform::from_xyz(-50.0, 0.0, 0.0),
+            ..default()
+        },
+        player::Player { left_hand: true },
+    ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/player_right_01.png"),
+            transform: Transform::from_xyz(50.0, 0.0, 0.0),
+            ..default()
+        },
+        player::Player { left_hand: false },
+    ));
+}
+
+fn player_movement_system(
+    keys: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+    mut query: Query<(&player::Player, &mut Transform)>,
+) {
+    let move_speed = 200.0;
+    for (player, mut transform) in &mut query {
+        if player.left_hand {
+            if keys.pressed(KeyCode::KeyW) {
+                transform.translation.y += move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyA) {
+                transform.translation.x -= move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyS) {
+                transform.translation.y -= move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyD) {
+                transform.translation.x += move_speed * time.delta_seconds();
+            }
+        } else {
+            if keys.pressed(KeyCode::KeyI) {
+                transform.translation.y += move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyJ) {
+                transform.translation.x -= move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyK) {
+                transform.translation.y -= move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyL) {
+                transform.translation.x += move_speed * time.delta_seconds();
+            }
+        }
+    }
 }
 
 fn move_tiles(
-    keys: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>,
-    mut query: Query<&mut Transform, With<crate::mapgenerator::MapTile>>,
+    mut query_tiles: Query<&mut Transform, (With<mapgenerator::MapTile>, Without<player::Player>)>,
+    query_players: Query<&Transform, (With<player::Player>, Without<mapgenerator::MapTile>)>,
 ) {
-    let move_speed = 150.;
-    for mut transform in &mut query {
-        if keys.pressed(KeyCode::KeyW) {
-            transform.translation.y += move_speed * time.delta_seconds();
-        }
-        if keys.pressed(KeyCode::KeyA) {
-            transform.translation.x -= move_speed * time.delta_seconds();
-        }
-        if keys.pressed(KeyCode::KeyS) {
-            transform.translation.y -= move_speed * time.delta_seconds();
-        }
-        if keys.pressed(KeyCode::KeyD) {
-            transform.translation.x += move_speed * time.delta_seconds();
-        }
+    let player_1x = query_players.iter().nth(0).unwrap().translation.x;
+    let player_1y = query_players.iter().nth(0).unwrap().translation.y;
+    let player_2x = query_players.iter().nth(1).unwrap().translation.x;
+    let player_2y = query_players.iter().nth(1).unwrap().translation.y;
+    let player_middle_x = (player_1x + player_2x) / 2.0;
+    let player_middle_y = (player_1y + player_2y) / 2.0;
+
+    for mut transform in &mut query_tiles {
+        transform.translation.x = player_middle_x;
+        transform.translation.y = player_middle_y;
     }
 }
 
@@ -93,5 +151,11 @@ fn fps_update_system(
                 text.sections[1].value = format!("{value:.2}");
             }
         }
+    }
+}
+
+fn kill_game_on_esc(keys: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
+    if keys.pressed(KeyCode::Escape) {
+        exit.send(AppExit::Success);
     }
 }
