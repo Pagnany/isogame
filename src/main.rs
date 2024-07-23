@@ -35,7 +35,7 @@ fn main() {
             (
                 fps_update_system,
                 player_movement_system,
-                move_tiles,
+                move_player_middle,
                 kill_game_on_esc,
             ),
         )
@@ -84,6 +84,15 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         player::Player { left_hand: false },
     ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/player_middle_01.png"),
+            transform: Transform::from_xyz(50.0, 0.0, 0.0),
+            ..default()
+        },
+        player::PlayerMiddle,
+    ));
 }
 
 fn player_movement_system(
@@ -123,9 +132,9 @@ fn player_movement_system(
     }
 }
 
-fn move_tiles(
-    mut query_tiles: Query<&mut Transform, (With<mapgenerator::MapTile>, Without<player::Player>)>,
-    query_players: Query<&Transform, (With<player::Player>, Without<mapgenerator::MapTile>)>,
+fn move_player_middle(
+    mut query_tiles: Query<&mut Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
+    query_players: Query<&Transform, (With<player::Player>, Without<player::PlayerMiddle>)>,
 ) {
     let player_1x = query_players.iter().nth(0).unwrap().translation.x;
     let player_1y = query_players.iter().nth(0).unwrap().translation.y;

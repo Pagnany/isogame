@@ -7,3 +7,6 @@ pub const PLAYER_WIDTH: f32 = 30.0;
 pub struct Player {
     pub left_hand: bool,
 }
+
+#[derive(Component)]
+pub struct PlayerMiddle;
