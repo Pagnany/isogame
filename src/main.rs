@@ -95,45 +95,69 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 }
 
+struct PlayerPos {
+    x: f32,
+    y: f32,
+}
+
 fn player_movement_system(
     keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
     mut query: Query<(&player::Player, &mut Transform)>,
 ) {
     let move_speed = 200.0;
-    for (player, mut transform) in &mut query {
+
+    let mut player_left = PlayerPos { x: 0.0, y: 0.0 };
+    let mut player_right = PlayerPos { x: 0.0, y: 0.0 };
+    // get new values from key input
+    for (player, transform) in &mut query {
         if player.left_hand {
+            player_left.x = transform.translation.x;
+            player_left.y = transform.translation.y;
             if keys.pressed(KeyCode::KeyW) {
-                transform.translation.y += move_speed * time.delta_seconds();
+                player_left.y += move_speed * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyA) {
-                transform.translation.x -= move_speed * time.delta_seconds();
+                player_left.x -= move_speed * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyS) {
-                transform.translation.y -= move_speed * time.delta_seconds();
+                player_left.y -= move_speed * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyD) {
-                transform.translation.x += move_speed * time.delta_seconds();
+                player_left.x += move_speed * time.delta_seconds();
             }
         } else {
-            if keys.pressed(KeyCode::KeyI) {
-                transform.translation.y += move_speed * time.delta_seconds();
+            player_right.x = transform.translation.x;
+            player_right.y = transform.translation.y;
+            if keys.pressed(KeyCode::KeyU) {
+                player_right.y += move_speed * time.delta_seconds();
+            }
+            if keys.pressed(KeyCode::KeyH) {
+                player_right.x -= move_speed * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyJ) {
-                transform.translation.x -= move_speed * time.delta_seconds();
+                player_right.y -= move_speed * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyK) {
-                transform.translation.y -= move_speed * time.delta_seconds();
+                player_right.x += move_speed * time.delta_seconds();
             }
-            if keys.pressed(KeyCode::KeyL) {
-                transform.translation.x += move_speed * time.delta_seconds();
-            }
+        }
+    }
+
+    // set new value
+    for (player, mut transform) in &mut query {
+        if player.left_hand {
+            transform.translation.x = player_left.x;
+            transform.translation.y = player_left.y;
+        } else {
+            transform.translation.x = player_right.x;
+            transform.translation.y = player_right.y;
         }
     }
 }
 
 fn move_player_middle(
-    mut query_tiles: Query<&mut Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
+    mut query_middle: Query<&mut Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
     query_players: Query<&Transform, (With<player::Player>, Without<player::PlayerMiddle>)>,
 ) {
     let player_1x = query_players.iter().nth(0).unwrap().translation.x;
@@ -143,7 +167,7 @@ fn move_player_middle(
     let player_middle_x = (player_1x + player_2x) / 2.0;
     let player_middle_y = (player_1y + player_2y) / 2.0;
 
-    for mut transform in &mut query_tiles {
+    for mut transform in &mut query_middle {
         transform.translation.x = player_middle_x;
         transform.translation.y = player_middle_y;
     }
