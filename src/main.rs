@@ -1,19 +1,14 @@
-use bevy::{
-    diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
-    prelude::*,
-    window::{PresentMode, WindowTheme},
-};
+use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::PresentMode};
 
 pub mod mapgenerator;
 pub mod player;
+pub mod system;
 
 pub const SCREEN_WIDTH: f32 = 1280.0;
 pub const SCREEN_HEIGHT: f32 = 720.0;
+const TICK_TIME: f64 = 1.0 / 50.0;
 
-const TICK_TIME: f32 = 1.0 / 50.0;
-
-#[derive(Component)]
-struct FpsText;
+pub const MOVESPEED: f32 = 200.0;
 
 fn main() {
     App::new()
@@ -22,8 +17,6 @@ fn main() {
                 primary_window: Some(Window {
                     title: "isogame".into(),
                     resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
-                    present_mode: PresentMode::AutoVsync,
-                    window_theme: Some(WindowTheme::Dark),
                     ..default()
                 }),
                 ..default()
@@ -33,13 +26,13 @@ fn main() {
         .add_systems(
             FixedUpdate,
             (
-                fps_update_system,
                 player_movement_system,
                 move_player_middle,
-                kill_game_on_esc,
+                system::kill_game_on_esc,
+                system::fps_update_system,
             ),
         )
-        .insert_resource(Time::<Fixed>::from_seconds(TICK_TIME.into()))
+        .insert_resource(Time::<Fixed>::from_seconds(TICK_TIME))
         .add_systems(Startup, setup)
         .run();
 }
@@ -62,7 +55,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..Default::default()
             }),
         ]),
-        FpsText,
+        system::FpsText,
     ));
 
     crate::mapgenerator::create_test_map(&mut commands, &asset_server);
@@ -105,8 +98,6 @@ fn player_movement_system(
     time: Res<Time>,
     mut query: Query<(&player::Player, &mut Transform)>,
 ) {
-    let move_speed = 200.0;
-
     let mut player_left = PlayerPos { x: 0.0, y: 0.0 };
     let mut player_right = PlayerPos { x: 0.0, y: 0.0 };
     // get new values from key input
@@ -115,31 +106,31 @@ fn player_movement_system(
             player_left.x = transform.translation.x;
             player_left.y = transform.translation.y;
             if keys.pressed(KeyCode::KeyW) {
-                player_left.y += move_speed * time.delta_seconds();
+                player_left.y += MOVESPEED * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyA) {
-                player_left.x -= move_speed * time.delta_seconds();
+                player_left.x -= MOVESPEED * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyS) {
-                player_left.y -= move_speed * time.delta_seconds();
+                player_left.y -= MOVESPEED * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyD) {
-                player_left.x += move_speed * time.delta_seconds();
+                player_left.x += MOVESPEED * time.delta_seconds();
             }
         } else {
             player_right.x = transform.translation.x;
             player_right.y = transform.translation.y;
             if keys.pressed(KeyCode::KeyU) {
-                player_right.y += move_speed * time.delta_seconds();
+                player_right.y += MOVESPEED * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyH) {
-                player_right.x -= move_speed * time.delta_seconds();
+                player_right.x -= MOVESPEED * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyJ) {
-                player_right.y -= move_speed * time.delta_seconds();
+                player_right.y -= MOVESPEED * time.delta_seconds();
             }
             if keys.pressed(KeyCode::KeyK) {
-                player_right.x += move_speed * time.delta_seconds();
+                player_right.x += MOVESPEED * time.delta_seconds();
             }
         }
     }
@@ -147,9 +138,29 @@ fn player_movement_system(
     // set new value
     for (player, mut transform) in &mut query {
         if player.left_hand {
+            if player_left.x < SCREEN_WIDTH / 2.0 * -1.0 {
+                player_left.x = SCREEN_WIDTH / 2.0 * -1.0;
+            } else if player_left.x > SCREEN_WIDTH / 2.0 {
+                player_left.x = SCREEN_WIDTH / 2.0;
+            }
+            if player_left.y < SCREEN_HEIGHT / 2.0 * -1.0 {
+                player_left.y = SCREEN_HEIGHT / 2.0 * -1.0;
+            } else if player_left.y > SCREEN_HEIGHT / 2.0 {
+                player_left.y = SCREEN_HEIGHT / 2.0;
+            }
             transform.translation.x = player_left.x;
             transform.translation.y = player_left.y;
         } else {
+            if player_right.x < SCREEN_WIDTH / 2.0 * -1.0 {
+                player_right.x = SCREEN_WIDTH / 2.0 * -1.0;
+            } else if player_right.x > SCREEN_WIDTH / 2.0 {
+                player_right.x = SCREEN_WIDTH / 2.0;
+            }
+            if player_right.y < SCREEN_HEIGHT / 2.0 * -1.0 {
+                player_right.y = SCREEN_HEIGHT / 2.0 * -1.0;
+            } else if player_right.y > SCREEN_HEIGHT / 2.0 {
+                player_right.y = SCREEN_HEIGHT / 2.0;
+            }
             transform.translation.x = player_right.x;
             transform.translation.y = player_right.y;
         }
@@ -170,25 +181,5 @@ fn move_player_middle(
     for mut transform in &mut query_middle {
         transform.translation.x = player_middle_x;
         transform.translation.y = player_middle_y;
-    }
-}
-
-fn fps_update_system(
-    diagnostics: Res<DiagnosticsStore>,
-    mut query: Query<&mut Text, With<FpsText>>,
-) {
-    for mut text in &mut query {
-        if let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) {
-            if let Some(value) = fps.smoothed() {
-                // Update the value of the second section
-                text.sections[1].value = format!("{value:.2}");
-            }
-        }
-    }
-}
-
-fn kill_game_on_esc(keys: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
-    if keys.pressed(KeyCode::Escape) {
-        exit.send(AppExit::Success);
     }
 }
