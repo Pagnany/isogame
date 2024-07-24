@@ -1,4 +1,4 @@
-use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::PresentMode};
+use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 
 pub mod mapgenerator;
 pub mod player;
@@ -21,7 +21,7 @@ fn main() {
                 }),
                 ..default()
             }),
-            FrameTimeDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin,
         ))
         .add_systems(
             FixedUpdate,
