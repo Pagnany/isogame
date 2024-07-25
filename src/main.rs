@@ -58,7 +58,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         system::FpsText,
     ));
 
-    crate::mapgenerator::create_test_map(&mut commands, &asset_server);
+    //crate::mapgenerator::create_test_map(&mut commands, &asset_server);
 
     commands.spawn((
         SpriteBundle {
