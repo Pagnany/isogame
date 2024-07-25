@@ -15,6 +15,7 @@ and obstacles for the treasure under the water.
 - fixed line lenght
 - collision with ships
 - collision with treasure
+- if ships drive into each other -> ship boonks
 - main menu
 - score
 - pause(maybe)

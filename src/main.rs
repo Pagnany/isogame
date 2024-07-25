@@ -1,6 +1,5 @@
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 
-pub mod mapgenerator;
 pub mod player;
 pub mod system;
 
@@ -9,6 +8,7 @@ pub const SCREEN_HEIGHT: f32 = 720.0;
 const TICK_TIME: f64 = 1.0 / 50.0;
 
 pub const MOVESPEED: f32 = 200.0;
+pub const LINE_LENGTH: f32 = 500.0;
 
 fn main() {
     App::new()
@@ -27,7 +27,6 @@ fn main() {
             FixedUpdate,
             (
                 player_movement_system,
-                move_player_middle,
                 system::kill_game_on_esc,
                 system::fps_update_system,
             ),
@@ -57,8 +56,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ]),
         system::FpsText,
     ));
-
-    //crate::mapgenerator::create_test_map(&mut commands, &asset_server);
 
     commands.spawn((
         SpriteBundle {
@@ -97,6 +94,7 @@ fn player_movement_system(
     keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
     mut query: Query<(&player::Player, &mut Transform)>,
+    mut query_middle: Query<&mut Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
 ) {
     let mut player_left = PlayerPos { x: 0.0, y: 0.0 };
     let mut player_right = PlayerPos { x: 0.0, y: 0.0 };
@@ -135,6 +133,29 @@ fn player_movement_system(
         }
     }
 
+    // middle Point between players
+    let player_middle_x = (player_left.x + player_right.x) / 2.0;
+    let player_middle_y = (player_left.y + player_right.y) / 2.0;
+    for mut transform in &mut query_middle {
+        transform.translation.x = player_middle_x;
+        transform.translation.y = player_middle_y;
+    }
+
+    // distance between players
+    let distance = ((player_left.x - player_right.x).powi(2)
+        + (player_left.y - player_right.y).powi(2))
+    .sqrt();
+
+    // limit line length
+    if distance > LINE_LENGTH {
+        // calculate new position for player_left and player_right
+        let angle = (player_left.y - player_right.y).atan2(player_left.x - player_right.x);
+        player_left.x = player_middle_x + LINE_LENGTH / 2.0 * angle.cos();
+        player_left.y = player_middle_y + LINE_LENGTH / 2.0 * angle.sin();
+        player_right.x = player_middle_x - LINE_LENGTH / 2.0 * angle.cos();
+        player_right.y = player_middle_y - LINE_LENGTH / 2.0 * angle.sin();
+    }
+
     // set new value
     for (player, mut transform) in &mut query {
         if player.left_hand {
@@ -164,22 +185,5 @@ fn player_movement_system(
             transform.translation.x = player_right.x;
             transform.translation.y = player_right.y;
         }
-    }
-}
-
-fn move_player_middle(
-    mut query_middle: Query<&mut Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
-    query_players: Query<&Transform, (With<player::Player>, Without<player::PlayerMiddle>)>,
-) {
-    let player_1x = query_players.iter().nth(0).unwrap().translation.x;
-    let player_1y = query_players.iter().nth(0).unwrap().translation.y;
-    let player_2x = query_players.iter().nth(1).unwrap().translation.x;
-    let player_2y = query_players.iter().nth(1).unwrap().translation.y;
-    let player_middle_x = (player_1x + player_2x) / 2.0;
-    let player_middle_y = (player_1y + player_2y) / 2.0;
-
-    for mut transform in &mut query_middle {
-        transform.translation.x = player_middle_x;
-        transform.translation.y = player_middle_y;
     }
 }
