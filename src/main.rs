@@ -1,5 +1,6 @@
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 
+pub mod enemy;
 pub mod player;
 pub mod system;
 
@@ -54,10 +55,55 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         system::FpsText,
     ));
 
+    // enemy
+    // under
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/enemy_under_01.png"),
+            transform: Transform::from_xyz(-250.0, 30.0, 0.0),
+            ..default()
+        },
+        enemy::Enemy {
+            under_water: enemy::EnemyType::UnderWater,
+        },
+    ));
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/enemy_under_01.png"),
+            transform: Transform::from_xyz(150.0, -100.0, 0.0),
+            ..default()
+        },
+        enemy::Enemy {
+            under_water: enemy::EnemyType::UnderWater,
+        },
+    ));
+    // over
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/enemy_over_01.png"),
+            transform: Transform::from_xyz(170.0, -200.0, 0.001),
+            ..default()
+        },
+        enemy::Enemy {
+            under_water: enemy::EnemyType::AboveWater,
+        },
+    ));
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("textures/enemy_over_01.png"),
+            transform: Transform::from_xyz(-470.0, -200.0, 0.001),
+            ..default()
+        },
+        enemy::Enemy {
+            under_water: enemy::EnemyType::AboveWater,
+        },
+    ));
+
+    // player
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("textures/player_left_01.png"),
-            transform: Transform::from_xyz(-50.0, 0.0, 0.0),
+            transform: Transform::from_xyz(-50.0, 0.0, 0.9),
             ..default()
         },
         player::Player { left_hand: true },
@@ -66,16 +112,17 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("textures/player_right_01.png"),
-            transform: Transform::from_xyz(50.0, 0.0, 0.0),
+            transform: Transform::from_xyz(50.0, 0.0, 0.9),
             ..default()
         },
         player::Player { left_hand: false },
     ));
 
+    // test middle point
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("textures/player_middle_01.png"),
-            transform: Transform::from_xyz(50.0, 0.0, 0.0),
+            transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
         },
         player::PlayerMiddle,
