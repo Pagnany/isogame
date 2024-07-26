@@ -25,6 +25,7 @@ fn main() {
         .add_systems(
             FixedUpdate,
             (
+                collision::collision_middle_enemy_under,
                 collision::collision_player_enemy_over,
                 player::player_movement_system,
                 system::kill_game_on_esc,
@@ -66,6 +67,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         enemy::Enemy {
+            height: 50.0,
+            width: 50.0,
             under_water: enemy::EnemyType::UnderWater,
         },
     ));
@@ -76,6 +79,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         enemy::Enemy {
+            height: 50.0,
+            width: 50.0,
             under_water: enemy::EnemyType::UnderWater,
         },
     ));
@@ -87,6 +92,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         enemy::Enemy {
+            height: 50.0,
+            width: 50.0,
             under_water: enemy::EnemyType::AboveWater,
         },
     ));
@@ -97,6 +104,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         enemy::Enemy {
+            height: 50.0,
+            width: 50.0,
             under_water: enemy::EnemyType::AboveWater,
         },
     ));

@@ -4,6 +4,9 @@ use bevy::prelude::*;
 pub const PLAYER_HIGHT: f32 = 50.0;
 pub const PLAYER_WIDTH: f32 = 50.0;
 
+pub const MIDDLE_HIGHT: f32 = 50.0;
+pub const MIDDLE_WIDTH: f32 = 50.0;
+
 pub const MOVESPEED: f32 = 200.0;
 pub const LINE_LENGTH: f32 = 500.0;
 pub const BONK_DISTANCE: f32 = 50.0;
