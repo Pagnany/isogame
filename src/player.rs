@@ -1,8 +1,12 @@
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use bevy::prelude::*;
 
+pub const PLAYER_HIGHT: f32 = 50.0;
+pub const PLAYER_WIDTH: f32 = 50.0;
+
 pub const MOVESPEED: f32 = 200.0;
 pub const LINE_LENGTH: f32 = 500.0;
+pub const BONK_DISTANCE: f32 = 50.0;
 
 #[derive(Component)]
 pub struct Player {
@@ -81,6 +85,14 @@ pub fn player_movement_system(
         player_left.y = player_middle_y + LINE_LENGTH / 2.0 * angle.sin();
         player_right.x = player_middle_x - LINE_LENGTH / 2.0 * angle.cos();
         player_right.y = player_middle_y - LINE_LENGTH / 2.0 * angle.sin();
+    }
+    // check player overlap
+    if distance < PLAYER_WIDTH {
+        let angle = (player_left.y - player_right.y).atan2(player_left.x - player_right.x);
+        player_left.x = player_middle_x + (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.cos();
+        player_left.y = player_middle_y + (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.sin();
+        player_right.x = player_middle_x - (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.cos();
+        player_right.y = player_middle_y - (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.sin();
     }
 
     // set new value

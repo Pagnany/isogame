@@ -1,5 +1,6 @@
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 
+pub mod collision;
 pub mod enemy;
 pub mod player;
 pub mod system;
