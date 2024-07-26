@@ -6,16 +6,15 @@ and obstacles for the treasure under the water.
 
 # Art
 - two ship
-    - visable wich site controls it
+    - visible wich site controls it
+- treasure
 - background(sea)
 - static obstacles
 - moving obstacles
 
 # TODO
-- fixed line lenght
-- collision with ships
+- collision with obstacles
 - collision with treasure
-- if ships drive into each other -> ship boonks
 - main menu
 - score
 - pause(maybe)

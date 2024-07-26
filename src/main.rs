@@ -25,6 +25,7 @@ fn main() {
         .add_systems(
             FixedUpdate,
             (
+                collision::collision_player_enemy_over,
                 player::player_movement_system,
                 system::kill_game_on_esc,
                 system::fps_update_system,
