@@ -3,14 +3,14 @@ use bevy::prelude::*;
 use crate::enemy;
 use crate::player;
 
-pub fn collision_player_enemy_over(
+pub fn player_with_enemy_over(
     query_player: Query<
         (&player::Player, &Transform),
         (With<player::Player>, Without<enemy::Enemy>),
     >,
     query_enemy: Query<(&enemy::Enemy, &Transform), (With<enemy::Enemy>, Without<player::Player>)>,
 ) {
-    for (player, player_transform) in query_player.iter() {
+    for (_player, player_transform) in query_player.iter() {
         for (enemy, enemy_transform) in query_enemy.iter() {
             if enemy.under_water == enemy::EnemyType::AboveWater {
                 // TODO 50 hardcoded!
@@ -26,7 +26,7 @@ pub fn collision_player_enemy_over(
     }
 }
 
-pub fn collision_middle_enemy_under(
+pub fn middle_with_enemy_under(
     query_enemy: Query<(&enemy::Enemy, &Transform), (With<enemy::Enemy>, Without<player::Player>)>,
     query_middle: Query<&Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
 ) {

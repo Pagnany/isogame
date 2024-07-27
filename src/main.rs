@@ -9,32 +9,50 @@ pub const SCREEN_WIDTH: f32 = 1280.0;
 pub const SCREEN_HEIGHT: f32 = 720.0;
 const TICK_TIME: f64 = 1.0 / 50.0;
 
+#[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
+enum GameState {
+    LoadingScreen,
+    MainMenu,
+    InGame,
+    GameOver,
+}
+
+#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+struct GameplaySet;
+
 fn main() {
-    App::new()
-        .add_plugins((
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    title: "isogame".into(),
-                    resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
-                    ..default()
-                }),
+    let mut app = App::new();
+
+    app.add_plugins((
+        DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "isogame".into(),
+                resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
                 ..default()
             }),
-            FrameTimeDiagnosticsPlugin,
-        ))
-        .add_systems(
-            FixedUpdate,
+            ..default()
+        }),
+        FrameTimeDiagnosticsPlugin,
+    ));
+    app.insert_resource(Time::<Fixed>::from_seconds(TICK_TIME));
+    app.insert_state(GameState::InGame);
+    app.add_systems(
+        FixedUpdate,
+        (
             (
-                collision::collision_middle_enemy_under,
-                collision::collision_player_enemy_over,
+                collision::player_with_enemy_over,
+                collision::middle_with_enemy_under,
                 player::player_movement_system,
-                system::kill_game_on_esc,
-                system::fps_update_system,
-            ),
-        )
-        .insert_resource(Time::<Fixed>::from_seconds(TICK_TIME))
-        .add_systems(Startup, setup)
-        .run();
+            )
+                .in_set(GameplaySet),
+            system::kill_game_on_esc,
+            system::fps_update_system,
+        ),
+    );
+    app.add_systems(Startup, setup);
+    app.configure_sets(FixedUpdate, GameplaySet.run_if(in_state(GameState::InGame)));
+
+    app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
