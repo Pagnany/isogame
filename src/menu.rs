@@ -40,6 +40,50 @@ pub fn button_system(
     }
 }
 
+pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // Button
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ..default()
+        })
+        .with_children(|parent| {
+            parent
+                .spawn(ButtonBundle {
+                    style: Style {
+                        width: Val::Px(150.0),
+                        height: Val::Px(65.0),
+                        border: UiRect::all(Val::Px(5.0)),
+                        // horizontally center child text
+                        justify_content: JustifyContent::Center,
+                        // vertically center child text
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    border_color: BorderColor(Color::BLACK),
+                    border_radius: BorderRadius::MAX,
+                    background_color: NORMAL_BUTTON.into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "Start",
+                        TextStyle {
+                            font: asset_server.load("fonts/SuperBubble-Rpaj3.ttf"),
+                            font_size: 20.0,
+                            color: Color::srgb(0.9, 0.9, 0.9),
+                        },
+                    ));
+                });
+        });
+}
+
 pub fn despawn_main_menu(mut commands: Commands, button_query: Query<Entity, With<Button>>) {
     for button in button_query.iter() {
         commands.entity(button).despawn_recursive();

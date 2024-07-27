@@ -55,6 +55,8 @@ fn main() {
         ),
     );
     app.add_systems(Startup, setup);
+    app.add_systems(OnEnter(GameState::MainMenu), menu::spawn_main_menu);
+    app.add_systems(OnEnter(GameState::InGame), spawn_ingame);
     app.add_systems(OnExit(GameState::MainMenu), menu::despawn_main_menu);
     app.configure_sets(
         FixedUpdate,
@@ -67,7 +69,7 @@ fn main() {
     app.run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 
     commands.spawn((
@@ -87,7 +89,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ]),
         system::FpsText,
     ));
+}
 
+fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
     // enemy
     // under
     commands.spawn((
@@ -168,46 +172,4 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         player::PlayerMiddle,
     ));
-
-    // Button
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent
-                .spawn(ButtonBundle {
-                    style: Style {
-                        width: Val::Px(150.0),
-                        height: Val::Px(65.0),
-                        border: UiRect::all(Val::Px(5.0)),
-                        // horizontally center child text
-                        justify_content: JustifyContent::Center,
-                        // vertically center child text
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    border_color: BorderColor(Color::BLACK),
-                    border_radius: BorderRadius::MAX,
-                    background_color: menu::NORMAL_BUTTON.into(),
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Start",
-                        TextStyle {
-                            font: asset_server.load("fonts/SuperBubble-Rpaj3.ttf"),
-                            font_size: 20.0,
-                            color: Color::srgb(0.9, 0.9, 0.9),
-                        },
-                    ));
-                });
-        });
 }
