@@ -15,6 +15,7 @@ pub fn button_system(
         (Changed<Interaction>, With<Button>),
     >,
     mut text_query: Query<&mut Text>,
+    mut next_state: ResMut<NextState<crate::GameState>>,
 ) {
     for (interaction, mut color, mut border_color, children) in &mut interaction_query {
         let mut text = text_query.get_mut(children[0]).unwrap();
@@ -23,6 +24,7 @@ pub fn button_system(
                 text.sections[0].value = "Start".to_string();
                 *color = PRESSED_BUTTON.into();
                 border_color.0 = Color::WHITE;
+                next_state.set(crate::GameState::InGame);
             }
             Interaction::Hovered => {
                 text.sections[0].value = "Start".to_string();
@@ -35,5 +37,11 @@ pub fn button_system(
                 border_color.0 = Color::BLACK;
             }
         }
+    }
+}
+
+pub fn despawn_main_menu(mut commands: Commands, button_query: Query<Entity, With<Button>>) {
+    for button in button_query.iter() {
+        commands.entity(button).despawn_recursive();
     }
 }

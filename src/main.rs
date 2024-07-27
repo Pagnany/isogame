@@ -11,7 +11,7 @@ pub const SCREEN_HEIGHT: f32 = 720.0;
 const TICK_TIME: f64 = 1.0 / 50.0;
 
 #[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
-enum GameState {
+pub enum GameState {
     LoadingScreen,
     MainMenu,
     InGame,
@@ -39,7 +39,7 @@ fn main() {
         FrameTimeDiagnosticsPlugin,
     ));
     app.insert_resource(Time::<Fixed>::from_seconds(TICK_TIME));
-    app.insert_state(GameState::InGame);
+    app.insert_state(GameState::MainMenu);
     app.add_systems(
         FixedUpdate,
         (
@@ -55,6 +55,7 @@ fn main() {
         ),
     );
     app.add_systems(Startup, setup);
+    app.add_systems(OnExit(GameState::MainMenu), menu::despawn_main_menu);
     app.configure_sets(
         FixedUpdate,
         (
@@ -172,8 +173,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(50.0),
-                height: Val::Percent(50.0),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
                 ..default()
