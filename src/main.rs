@@ -2,6 +2,7 @@ use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 
 pub mod collision;
 pub mod enemy;
+pub mod menu;
 pub mod player;
 pub mod system;
 
@@ -19,6 +20,9 @@ enum GameState {
 
 #[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
 struct GameplaySet;
+
+#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+struct MainMenuSet;
 
 fn main() {
     let mut app = App::new();
@@ -45,12 +49,19 @@ fn main() {
                 player::player_movement_system,
             )
                 .in_set(GameplaySet),
+            (menu::button_system).in_set(MainMenuSet),
             system::kill_game_on_esc,
             system::fps_update_system,
         ),
     );
     app.add_systems(Startup, setup);
-    app.configure_sets(FixedUpdate, GameplaySet.run_if(in_state(GameState::InGame)));
+    app.configure_sets(
+        FixedUpdate,
+        (
+            GameplaySet.run_if(in_state(GameState::InGame)),
+            MainMenuSet.run_if(in_state(GameState::MainMenu)),
+        ),
+    );
 
     app.run();
 }
@@ -156,4 +167,46 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         player::PlayerMiddle,
     ));
+
+    // Button
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(50.0),
+                height: Val::Percent(50.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ..default()
+        })
+        .with_children(|parent| {
+            parent
+                .spawn(ButtonBundle {
+                    style: Style {
+                        width: Val::Px(150.0),
+                        height: Val::Px(65.0),
+                        border: UiRect::all(Val::Px(5.0)),
+                        // horizontally center child text
+                        justify_content: JustifyContent::Center,
+                        // vertically center child text
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    border_color: BorderColor(Color::BLACK),
+                    border_radius: BorderRadius::MAX,
+                    background_color: menu::NORMAL_BUTTON.into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "Start",
+                        TextStyle {
+                            font: asset_server.load("fonts/SuperBubble-Rpaj3.ttf"),
+                            font_size: 20.0,
+                            color: Color::srgb(0.9, 0.9, 0.9),
+                        },
+                    ));
+                });
+        });
 }
