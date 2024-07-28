@@ -4,6 +4,12 @@ pub const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 pub const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
 pub const PRESSED_BUTTON: Color = Color::srgb(0.35, 0.75, 0.35);
 
+#[derive(Component)]
+pub struct MainMenu;
+
+#[derive(Component)]
+pub struct GameOverMenu;
+
 pub fn button_system(
     mut interaction_query: Query<
         (
@@ -43,15 +49,29 @@ pub fn button_system(
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Button
     commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::SpaceEvenly,
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
                 ..default()
             },
-            ..default()
+            MainMenu,
+        ))
+        .with_children(|parent| {
+            parent.spawn((TextBundle::from_sections([TextSection::new(
+                "GAME TITLE",
+                TextStyle {
+                    font: asset_server.load("fonts/SuperBubble-Rpaj3.ttf"),
+                    font_size: 50.0,
+                    color: Color::srgb(1.0, 1.0, 1.0),
+                },
+            )]),));
         })
         .with_children(|parent| {
             parent
@@ -67,7 +87,6 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                     border_color: BorderColor(Color::BLACK),
-                    border_radius: BorderRadius::MAX,
                     background_color: NORMAL_BUTTON.into(),
                     ..default()
                 })
@@ -84,8 +103,8 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         });
 }
 
-pub fn despawn_main_menu(mut commands: Commands, button_query: Query<Entity, With<Button>>) {
-    for button in button_query.iter() {
-        commands.entity(button).despawn_recursive();
+pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, With<MainMenu>>) {
+    for entity in main_menu_query.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 }
