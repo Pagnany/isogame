@@ -69,8 +69,15 @@ fn main() {
     app.run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
+
+    // background
+    commands.spawn((SpriteBundle {
+        texture: asset_server.load("textures/background_01.png"),
+        transform: Transform::from_xyz(0.0, 0.0, 0.0),
+        ..default()
+    },));
 
     commands.spawn((
         TextBundle::from_sections([

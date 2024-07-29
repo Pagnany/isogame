@@ -65,7 +65,7 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         ))
         .with_children(|parent| {
             parent.spawn((TextBundle::from_sections([TextSection::new(
-                "GAME TITLE",
+                "Treasure Connect",
                 TextStyle {
                     font: asset_server.load("fonts/SuperBubble-Rpaj3.ttf"),
                     font_size: 50.0,
