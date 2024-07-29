@@ -9,6 +9,7 @@ pub fn player_with_enemy_over(
         (With<player::Player>, Without<enemy::Enemy>),
     >,
     query_enemy: Query<(&enemy::Enemy, &Transform), (With<enemy::Enemy>, Without<player::Player>)>,
+    mut next_state: ResMut<NextState<crate::GameState>>,
 ) {
     for (_player, player_transform) in query_player.iter() {
         for (enemy, enemy_transform) in query_enemy.iter() {
@@ -19,7 +20,7 @@ pub fn player_with_enemy_over(
                     && player_transform.translation.y < enemy_transform.translation.y + 50.0
                     && player_transform.translation.y > enemy_transform.translation.y - 50.0
                 {
-                    println!("collision player enemy over");
+                    next_state.set(crate::GameState::GameOver);
                 }
             }
         }
@@ -29,6 +30,7 @@ pub fn player_with_enemy_over(
 pub fn middle_with_enemy_under(
     query_enemy: Query<(&enemy::Enemy, &Transform), (With<enemy::Enemy>, Without<player::Player>)>,
     query_middle: Query<&Transform, (With<player::PlayerMiddle>, Without<player::Player>)>,
+    mut next_state: ResMut<NextState<crate::GameState>>,
 ) {
     for middle_transform in query_middle.iter() {
         for (enemy, enemy_transform) in query_enemy.iter() {
@@ -39,7 +41,7 @@ pub fn middle_with_enemy_under(
                     && middle_transform.translation.y < enemy_transform.translation.y + 50.0
                     && middle_transform.translation.y > enemy_transform.translation.y - 50.0
                 {
-                    println!("collision middle enemy under");
+                    next_state.set(crate::GameState::GameOver);
                 }
             }
         }

@@ -58,11 +58,17 @@ fn main() {
     app.add_systems(OnEnter(GameState::MainMenu), menu::spawn_main_menu);
     app.add_systems(OnEnter(GameState::InGame), spawn_ingame);
     app.add_systems(OnExit(GameState::MainMenu), menu::despawn_main_menu);
+    app.add_systems(OnExit(GameState::GameOver), menu::despawn_main_menu);
+    app.add_systems(
+        OnEnter(GameState::GameOver),
+        (menu::spawn_gameover_menu, despawn_ingame),
+    );
     app.configure_sets(
         FixedUpdate,
         (
             GameplaySet.run_if(in_state(GameState::InGame)),
-            MainMenuSet.run_if(in_state(GameState::MainMenu)),
+            MainMenuSet
+                .run_if(in_state(GameState::MainMenu).or_else(in_state(GameState::GameOver))),
         ),
     );
 
@@ -98,6 +104,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 }
 
+#[derive(Component)]
+struct InGameEntity;
+
 fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
     // enemy
     // under
@@ -112,6 +121,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             width: 50.0,
             under_water: enemy::EnemyType::UnderWater,
         },
+        InGameEntity,
     ));
     commands.spawn((
         SpriteBundle {
@@ -124,6 +134,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             width: 50.0,
             under_water: enemy::EnemyType::UnderWater,
         },
+        InGameEntity,
     ));
     // over
     commands.spawn((
@@ -137,6 +148,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             width: 50.0,
             under_water: enemy::EnemyType::AboveWater,
         },
+        InGameEntity,
     ));
     commands.spawn((
         SpriteBundle {
@@ -149,6 +161,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             width: 50.0,
             under_water: enemy::EnemyType::AboveWater,
         },
+        InGameEntity,
     ));
 
     // player
@@ -159,6 +172,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         player::Player { left_hand: true },
+        InGameEntity,
     ));
 
     commands.spawn((
@@ -168,6 +182,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         player::Player { left_hand: false },
+        InGameEntity,
     ));
 
     // test middle point
@@ -178,5 +193,12 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         player::PlayerMiddle,
+        InGameEntity,
     ));
+}
+
+fn despawn_ingame(mut commands: Commands, query: Query<Entity, With<InGameEntity>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
 }
