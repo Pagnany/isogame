@@ -3,6 +3,7 @@ use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 pub mod collision;
 pub mod enemy;
 pub mod menu;
+pub mod physics;
 pub mod player;
 pub mod system;
 
@@ -46,7 +47,8 @@ fn main() {
             (
                 collision::player_with_enemy_over,
                 collision::middle_with_enemy_under,
-                player::player_movement_system,
+                player::player_velocity_input_system,
+                physics::player_velocity_system,
             )
                 .in_set(GameplaySet),
             (menu::button_system).in_set(MainMenuSet),
@@ -171,7 +173,10 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform::from_xyz(-50.0, 0.0, 0.9),
             ..default()
         },
-        player::Player { left_hand: true },
+        player::Player {
+            left_hand: true,
+            velocity: Vec2::ZERO,
+        },
         InGameEntity,
     ));
 
@@ -181,7 +186,10 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform::from_xyz(50.0, 0.0, 0.9),
             ..default()
         },
-        player::Player { left_hand: false },
+        player::Player {
+            left_hand: false,
+            velocity: Vec2::ZERO,
+        },
         InGameEntity,
     ));
 
