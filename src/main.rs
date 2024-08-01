@@ -47,6 +47,7 @@ fn main() {
             (
                 collision::player_with_enemy_over,
                 collision::middle_with_enemy_under,
+                collision::player_with_player,
                 player::player_velocity_input_system,
                 physics::player_velocity_system,
             )

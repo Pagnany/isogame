@@ -8,7 +8,7 @@ pub const MIDDLE_WIDTH: f32 = 50.0;
 
 pub const MOVESPEED: f32 = 250.0;
 pub const LINE_LENGTH: f32 = 500.0;
-pub const BONK_DISTANCE: f32 = 50.0;
+pub const BONK_DISTANCE: f32 = 200.0;
 
 #[derive(Component)]
 pub struct Player {
@@ -19,9 +19,9 @@ pub struct Player {
 #[derive(Component)]
 pub struct PlayerMiddle;
 
-struct PlayerPos {
-    x: f32,
-    y: f32,
+pub struct PlayerPos {
+    pub x: f32,
+    pub y: f32,
 }
 
 pub fn player_velocity_input_system(
