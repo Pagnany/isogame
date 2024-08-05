@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use rand::Rng;
+use std::f32::consts::PI;
 
 #[derive(PartialEq, Eq)]
 pub enum EnemyType {
@@ -16,14 +16,13 @@ pub struct Enemy {
 }
 
 pub fn enemy_movement_system(time: Res<Time>, mut query: Query<(&mut Enemy, &mut Transform)>) {
-    let mut rng = rand::thread_rng();
-
     for (mut enemy, mut transform) in query.iter_mut() {
+        let mut x = transform.translation.x;
         let mut y = transform.translation.y;
 
-        enemy.movement_factor += rng.gen::<f32>() * 3.0 * time.delta_seconds();
-        y += (enemy.movement_factor).sin();
+        enemy.movement_factor += 0.01;
+        y += (enemy.movement_factor * PI).sin() * 3.0;
 
-        transform.translation.y = y;
+        transform.translation = Vec3::new(x, y, 0.0);
     }
 }

@@ -20,12 +20,12 @@ and obstacles for the treasure under the water.
 - [x] collision with obstacles
 - [x] collision with treasure
 - [x] main menu
-- [ ] Game Over Screen
+- [x] Game Over Screen
 - [ ] moving obstacles
 	- [ ] predetermined path/circle
 	- [ ] goes for the player/treasure
 - [ ] score/level
-- [ ] replay function
+- [x] replay function
 - [ ] WASM on itch.io
 	- see example video for bevy jam
 		- https://youtu.be/ESBRyXClaYc?si=Y_HqLtBMqxVH92fD

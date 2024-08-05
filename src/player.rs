@@ -19,6 +19,7 @@ pub struct Player {
 #[derive(Component)]
 pub struct PlayerMiddle;
 
+#[derive(Default)]
 pub struct PlayerPos {
     pub x: f32,
     pub y: f32,
@@ -30,8 +31,8 @@ pub fn player_velocity_input_system(
     mut query: Query<(&mut Player, &Transform)>,
     mut query_middle: Query<&mut Transform, (With<PlayerMiddle>, Without<Player>)>,
 ) {
-    let mut player_left = PlayerPos { x: 0.0, y: 0.0 };
-    let mut player_right = PlayerPos { x: 0.0, y: 0.0 };
+    let mut player_left = PlayerPos::default();
+    let mut player_right = PlayerPos::default();
 
     for (mut player, transform) in query.iter_mut() {
         if player.left_hand {
@@ -77,7 +78,7 @@ pub fn player_velocity_input_system(
     }
 
     // distance between players
-    let distance = ((player_left.x - player_right.x).powi(2)
+    let _distance = ((player_left.x - player_right.x).powi(2)
         + (player_left.y - player_right.y).powi(2))
     .sqrt();
 
@@ -89,13 +90,5 @@ pub fn player_velocity_input_system(
     //    player_left.y = player_middle_y + LINE_LENGTH / 2.0 * angle.sin();
     //    player_right.x = player_middle_x - LINE_LENGTH / 2.0 * angle.cos();
     //    player_right.y = player_middle_y - LINE_LENGTH / 2.0 * angle.sin();
-    //}
-    // check player overlap
-    //if distance < PLAYER_WIDTH {
-    //    let angle = (player_left.y - player_right.y).atan2(player_left.x - player_right.x);
-    //    player_left.x = player_middle_x + (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.cos();
-    //    player_left.y = player_middle_y + (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.sin();
-    //    player_right.x = player_middle_x - (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.cos();
-    //    player_right.y = player_middle_y - (PLAYER_WIDTH / 2.0 + BONK_DISTANCE) * angle.sin();
     //}
 }

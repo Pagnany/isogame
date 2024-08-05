@@ -50,6 +50,7 @@ fn main() {
                 collision::player_with_player,
                 player::player_velocity_input_system,
                 physics::player_velocity_system,
+                enemy::enemy_movement_system,
             )
                 .in_set(GameplaySet),
             (menu::button_system).in_set(MainMenuSet),
@@ -123,6 +124,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             height: 50.0,
             width: 50.0,
             under_water: enemy::EnemyType::UnderWater,
+            movement_factor: 1.0,
         },
         InGameEntity,
     ));
@@ -136,6 +138,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             height: 50.0,
             width: 50.0,
             under_water: enemy::EnemyType::UnderWater,
+            movement_factor: 1.0,
         },
         InGameEntity,
     ));
@@ -150,6 +153,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             height: 50.0,
             width: 50.0,
             under_water: enemy::EnemyType::AboveWater,
+            movement_factor: 1.0,
         },
         InGameEntity,
     ));
@@ -163,6 +167,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
             height: 50.0,
             width: 50.0,
             under_water: enemy::EnemyType::AboveWater,
+            movement_factor: 1.0,
         },
         InGameEntity,
     ));
