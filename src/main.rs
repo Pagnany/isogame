@@ -123,6 +123,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
         enemy::Enemy {
             height: 50.0,
             width: 50.0,
+            inital_pos: Vec2 { x: -250.0, y: 30.0 },
             under_water: enemy::EnemyType::UnderWater,
             movement_factor: 1.0,
         },
@@ -137,6 +138,10 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
         enemy::Enemy {
             height: 50.0,
             width: 50.0,
+            inital_pos: Vec2 {
+                x: 150.0,
+                y: -100.0,
+            },
             under_water: enemy::EnemyType::UnderWater,
             movement_factor: 1.0,
         },
@@ -152,6 +157,10 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
         enemy::Enemy {
             height: 50.0,
             width: 50.0,
+            inital_pos: Vec2 {
+                x: 170.0,
+                y: -200.0,
+            },
             under_water: enemy::EnemyType::AboveWater,
             movement_factor: 1.0,
         },
@@ -166,6 +175,10 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
         enemy::Enemy {
             height: 50.0,
             width: 50.0,
+            inital_pos: Vec2 {
+                x: -470.0,
+                y: -200.0,
+            },
             under_water: enemy::EnemyType::AboveWater,
             movement_factor: 1.0,
         },
