@@ -13,7 +13,7 @@ pub fn player_with_enemy_over(
 ) {
     for (_player, player_transform) in query_player.iter() {
         for (enemy, enemy_transform) in query_enemy.iter() {
-            if enemy.under_water == enemy::EnemyType::AboveWater {
+            if enemy.enemy_type == enemy::EnemyType::AboveWater {
                 // TODO 50 hardcoded!
                 if player_transform.translation.x < enemy_transform.translation.x + 50.0
                     && player_transform.translation.x > enemy_transform.translation.x - 50.0
@@ -34,7 +34,7 @@ pub fn middle_with_enemy_under(
 ) {
     for middle_transform in query_middle.iter() {
         for (enemy, enemy_transform) in query_enemy.iter() {
-            if enemy.under_water == enemy::EnemyType::UnderWater {
+            if enemy.enemy_type == enemy::EnemyType::UnderWater {
                 // TODO 50 hardcoded!
                 if middle_transform.translation.x < enemy_transform.translation.x + 50.0
                     && middle_transform.translation.x > enemy_transform.translation.x - 50.0
