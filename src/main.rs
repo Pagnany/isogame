@@ -117,7 +117,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("textures/enemy_under_01.png"),
-            transform: Transform::from_xyz(-250.0, 30.0, 0.0),
+            transform: Transform::from_xyz(-250.0, 30.0, 0.001),
             ..default()
         },
         enemy::Enemy {
@@ -132,7 +132,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("textures/enemy_under_01.png"),
-            transform: Transform::from_xyz(150.0, -100.0, 0.0),
+            transform: Transform::from_xyz(150.0, -100.0, 0.001),
             ..default()
         },
         enemy::Enemy {
@@ -216,7 +216,7 @@ fn spawn_ingame(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("textures/player_middle_01.png"),
-            transform: Transform::from_xyz(0.0, 0.0, 0.0),
+            transform: Transform::from_xyz(0.0, 0.0, 0.8),
             ..default()
         },
         player::PlayerMiddle,
