@@ -1,3 +1,4 @@
+use bevy::asset::{AssetMetaCheck, AssetPlugin};
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 
 pub mod collision;
@@ -27,16 +28,20 @@ struct MainMenuSet;
 
 fn main() {
     let mut app = App::new();
-
     app.add_plugins((
-        DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "isogame".into(),
-                resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
+        DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "isogame".into(),
+                    resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
+                    ..default()
+                }),
+                ..default()
+            })
+            .set(AssetPlugin {
+                meta_check: AssetMetaCheck::Never,
                 ..default()
             }),
-            ..default()
-        }),
         FrameTimeDiagnosticsPlugin,
     ));
     app.insert_resource(Time::<Fixed>::from_seconds(TICK_TIME));
